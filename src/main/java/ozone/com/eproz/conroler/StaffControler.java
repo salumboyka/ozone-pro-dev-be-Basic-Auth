@@ -24,21 +24,21 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/staffs")
 
 public class StaffControler {
 
-    private final StaffServices userServices;
+    private final StaffServices staffServices;
 
     @PostMapping
-    public ResponseEntity<StaffDtoResponse> createUser(
+    public ResponseEntity<StaffDtoResponse> createStaff(
             @Valid @RequestBody StaffDtoRequest request,
             UriComponentsBuilder url) {
-        StaffDtoResponse createdUser = userServices.createStaff(request);
-        URI location = url.path("/api/v1/users/{id}")
-                .buildAndExpand(createdUser.id())
+        StaffDtoResponse createdStaff = staffServices.createStaff(request);
+        URI location = url.path("/api/v1/staffs/{id}")
+                .buildAndExpand(createdStaff.id())
                 .toUri();
-        return ResponseEntity.created(location).body(createdUser);
+        return ResponseEntity.created(location).body(createdStaff);
     }
 
     @GetMapping
@@ -47,17 +47,17 @@ public class StaffControler {
             @RequestParam(required = false) String lname,
             @RequestParam(defaultValue = "0") int page,
             @PageableDefault(size = 10) org.springframework.data.domain.Pageable pageable) {
-        return userServices.findAll(fname, lname, pageable);
+        return staffServices.findAll(fname, lname, pageable);
     }
 
     @GetMapping("/{id}")
     public StaffDtoResponse findById(@PathVariable UUID id) {
-        return userServices.findById(id);
+        return staffServices.findById(id);
     }
 
     @PutMapping ("/{id}")
     public StaffDtoResponse updateStaff(@PathVariable UUID id, @Valid @RequestBody StaffDtoRequest u) {
-        return userServices.updateStaff(id, u);
+        return staffServices.updateStaff(id, u);
     }
 
 }

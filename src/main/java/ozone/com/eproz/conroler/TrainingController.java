@@ -1,0 +1,92 @@
+package ozone.com.eproz.conroler;
+
+import java.net.URI;
+import java.util.UUID;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import ozone.com.eproz.dto.AttachmentDtoRequest;
+import ozone.com.eproz.dto.AttachmentDtoResponse;
+import ozone.com.eproz.dto.PageResponse;
+import ozone.com.eproz.dto.TrainingDtoRequest;
+import ozone.com.eproz.dto.TrainingDtoResponse;
+import ozone.com.eproz.service.TrainingServices;
+
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/api/v1/training")
+public class TrainingController {
+
+	private final TrainingServices trainingServices;
+
+	@PostMapping
+	public ResponseEntity<TrainingDtoResponse> createTraining(
+			@Valid @RequestBody TrainingDtoRequest request,
+			UriComponentsBuilder url) {
+		TrainingDtoResponse created = trainingServices.createTraining(request);
+		URI location = url.path("/api/v1/training/{id}").buildAndExpand(created.id()).toUri();
+		return ResponseEntity.created(location).body(created);
+	}
+
+	@PostMapping(consumes = "multipart/form-data")
+	public ResponseEntity<TrainingDtoResponse> createTrainingWithAttachment(
+			@Valid @ModelAttribute TrainingDtoRequest request,
+			@RequestPart(value = "attachmentFile", required = false) MultipartFile attachmentFile,
+			@RequestPart(value = "file", required = false) MultipartFile file,
+			UriComponentsBuilder url) {
+		if (attachmentFile == null) {
+			attachmentFile = file;
+		}
+		TrainingDtoRequest requestWithFile = new TrainingDtoRequest(
+				request.title(), request.description(), request.provider(), request.attachment(),
+				request.startDate(), request.endDate(), request.staffId(), attachmentFile);
+		TrainingDtoResponse created = trainingServices.createTraining(requestWithFile);
+		URI location = url.path("/api/v1/training/{id}").buildAndExpand(created.id()).toUri();
+		return ResponseEntity.created(location).body(created);
+	}
+
+	@GetMapping
+	public PageResponse<TrainingDtoResponse> findAll(
+			@RequestParam(required = false) UUID staffId,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+		if (page < 0 || size < 1 || size > 100) {
+			throw new IllegalArgumentException("Page must be non-negative and size must be between 1 and 100");
+		}
+		return trainingServices.findAll(staffId, PageRequest.of(page, size));
+	}
+
+	@GetMapping("/{id}")
+	public TrainingDtoResponse findById(@PathVariable UUID id) {
+		return trainingServices.findById(id);
+	}
+
+	@PutMapping("/{id}")
+	public TrainingDtoResponse updateTraining(
+			@PathVariable UUID id,
+			@Valid @RequestBody TrainingDtoRequest request) {
+		return trainingServices.updateTraining(id, request);
+	}
+
+	@PostMapping(value = "/{id}/attachment", consumes = "multipart/form-data")
+	public AttachmentDtoResponse uploadAttachment(
+			@PathVariable UUID id,
+			@RequestPart("file") MultipartFile file) {
+		return trainingServices.uploadAttachment(id, new AttachmentDtoRequest(file));
+	}
+}

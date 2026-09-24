@@ -23,11 +23,10 @@ import ozone.com.eproz.repository.StaffRepository;
 
 public class StaffServices {
 
-    private final StaffRepository users;
+    private final StaffRepository staffs;
 
     @Transactional
     public StaffDtoResponse createStaff(StaffDtoRequest userDtoRequest) {
-        // Implement the logic to create a user
         StaffModel staffModel = new StaffModel(
             userDtoRequest.email(),
             userDtoRequest.fname(),
@@ -35,15 +34,18 @@ public class StaffServices {
             userDtoRequest.lname(),
             userDtoRequest.gender(),
             userDtoRequest.age(),
-            userDtoRequest.address()
+            userDtoRequest.address(),
+            userDtoRequest.status(),
+            userDtoRequest.dateOfjoin(),
+            userDtoRequest.position()
         );
-        return StaffDtoResponse.from(users.save(staffModel));
+        return StaffDtoResponse.from(staffs.save(staffModel));
     }
     
 
     public PageResponse<StaffDtoResponse> findAll(String fname, String lname, Pageable pageable) {
         
-        return PageResponse.from(users.search(fname, lname, pageable).map(StaffDtoResponse::from));
+        return PageResponse.from(staffs.search(fname, lname, pageable).map(StaffDtoResponse::from));
 
     }
 
@@ -54,14 +56,15 @@ public class StaffServices {
     @Transactional 
     public StaffDtoResponse updateStaff(UUID id, StaffDtoRequest u) {
         StaffModel staffModel = getOrThrow(id);
-        
-        staffModel.update(u.address(), u.age(), u.email(), u.fname(), u.gender(), u.lname(), u.mname());
+
+        staffModel.update(u.email(), u.age(), u.mname(), u.lname(), u.gender(), u.fname(), u.address(),
+                u.status(), u.dateOfjoin(), u.position());
         return StaffDtoResponse.from(staffModel);
     }
 
 
     private StaffModel getOrThrow(UUID id) {
-        return users.findById(id)
+        return staffs.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
     }
 

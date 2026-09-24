@@ -1,27 +1,22 @@
 package ozone.com.eproz.model;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import jakarta.persistence.*;
 import lombok.*;
 import ozone.com.eproz.enums.GenderEnum;
 
-@Entity 
-
-
+@Entity
 @Table(name = "staff", uniqueConstraints = {
         @UniqueConstraint(columnNames = "email"),
-        @UniqueConstraint (columnNames = "username")
+        @UniqueConstraint(columnNames = "username")
 })
-
 @Getter
-
 @Setter
-
-@NoArgsConstructor(access = AccessLevel.PROTECTED)  
-@ToString (of = {"id", "email"})
-
-public class StaffModel extends Auditable{
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString(of = {"id", "email"})
+public class StaffModel extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,25 +44,40 @@ public class StaffModel extends Auditable{
     @Column(name = "address", nullable = false, length = 120)
     private String address;
 
-    public StaffModel(String email, String fname, String mname, String lname, GenderEnum gender, int age, String address) {
+    @Column(name = "status", nullable = false, length = 50)
+    private String status;
+
+    @Column(name = "date_of_join", nullable = false)
+    private LocalDate dateOfjoin;
+
+    @Column(name = "position", nullable = false, length = 120)
+    private String position;
+
+    public StaffModel(String email, String fname, String mname, String lname, GenderEnum gender, int age,
+                     String address, String status, LocalDate dateOfjoin, String position) {
         this.email = email;
         this.fname = fname;
         this.mname = mname;
         this.lname = lname;
         this.gender = gender;
         this.age = age;
-        this.address = address; 
+        this.address = address;
+        this.status = status;
+        this.dateOfjoin = dateOfjoin;
+        this.position = position;
     }
 
-    public void update(String email, int age, String mname, String lname, GenderEnum gender, String fname, String address) {
+    public void update(String email, int age, String mname, String lname, GenderEnum gender, String fname,
+                       String address, String status, LocalDate dateOfjoin, String position) {
         this.email = email;
         this.fname = fname;
         this.mname = mname;
         this.lname = lname;
         this.gender = gender;
         this.age = age;
-        this.address = address; 
+        this.address = address;
+        this.status = status;
+        this.dateOfjoin = dateOfjoin;
+        this.position = position;
     }
-
-
 }

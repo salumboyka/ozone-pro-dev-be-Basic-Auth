@@ -1,6 +1,7 @@
 package ozone.com.eproz.dto;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import ozone.com.eproz.enums.GenderEnum;
@@ -15,6 +16,9 @@ public record StaffDtoResponse(
     GenderEnum gender,
     int age,
     String address,
+    String status,
+    LocalDate dateOfjoin,
+    String position,
     Instant createdAt,
     Instant updatedAt
 ) {
@@ -28,6 +32,9 @@ public record StaffDtoResponse(
             u.getGender(),
             u.getAge(),
             u.getAddress(),
+            u.getStatus(),
+            u.getDateOfjoin(),
+            u.getPosition(),
             u.getCreatedAt(),
             u.getUpdatedAt()
         );

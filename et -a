@@ -1,0 +1,21 @@
+                               Table "public.staff"
+   Column   |           Type           | Collation | Nullable |      Default      
+------------+--------------------------+-----------+----------+-------------------
+ id         | uuid                     |           | not null | 
+ email      | character varying(50)    |           | not null | 
+ username   | character varying(120)   |           |          | 
+ fname      | character varying(120)   |           | not null | 
+ mname      | character varying(120)   |           | not null | 
+ lname      | character varying(120)   |           | not null | 
+ gender     | character varying(120)   |           | not null | 
+ age        | integer                  |           | not null | 
+ address    | character varying(120)   |           | not null | 
+ created_at | timestamp with time zone |           | not null | CURRENT_TIMESTAMP
+ updated_at | timestamp with time zone |           |          | 
+Indexes:
+    "users_pkey" PRIMARY KEY, btree (id)
+    "staff_email_key" UNIQUE CONSTRAINT, btree (email)
+    "staff_username_key" UNIQUE CONSTRAINT, btree (username)
+Referenced by:
+    TABLE "next_of_kin" CONSTRAINT "fk_next_of_kin_staff" FOREIGN KEY (staff_id) REFERENCES staff(id) ON UPDATE CASCADE ON DELETE CASCADE
+

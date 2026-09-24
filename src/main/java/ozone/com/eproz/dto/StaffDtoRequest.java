@@ -1,4 +1,7 @@
 package ozone.com.eproz.dto;
+
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.*;
 import ozone.com.eproz.enums.GenderEnum;
 
@@ -27,6 +30,17 @@ public record StaffDtoRequest(
 
     @NotBlank(message = "Address is required")
     @Size(max = 120, message = "Address must be less than or equal to 120 characters")
-    String address
+    String address,
+
+    @NotBlank(message = "Status is required")
+    @Size(max = 50, message = "Status must be less than or equal to 50 characters")
+    String status,
+
+    @NotNull(message = "Date of join is required")
+    LocalDate dateOfjoin,
+
+    @NotBlank(message = "Position is required")
+    @Size(max = 120, message = "Position must be less than or equal to 120 characters")
+    String position
 ) {
 }
