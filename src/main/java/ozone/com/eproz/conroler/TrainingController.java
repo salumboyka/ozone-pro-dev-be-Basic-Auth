@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +36,7 @@ public class TrainingController {
 
 	private final TrainingServices trainingServices;
 
-	@PostMapping
+	@PostMapping(consumes = "application/json")
 	public ResponseEntity<TrainingDtoResponse> createTraining(
 			@Valid @RequestBody TrainingDtoRequest request,
 			UriComponentsBuilder url) {
@@ -45,12 +47,20 @@ public class TrainingController {
 
 	@PostMapping(consumes = "multipart/form-data")
 	public ResponseEntity<TrainingDtoResponse> createTrainingWithAttachment(
-			@Valid @ModelAttribute TrainingDtoRequest request,
-			@RequestPart(value = "attachmentFile", required = false) MultipartFile attachmentFile,
-			@RequestPart(value = "file", required = false) MultipartFile file,
+			@Valid @RequestPart(value = "request", required = false) TrainingDtoRequest request,
+			@Valid @RequestPart(value = "data", required = false) TrainingDtoRequest data,
+			@ModelAttribute TrainingDtoRequest formRequest,
+			@RequestPart("attachmentFile") MultipartFile attachmentFile,
 			UriComponentsBuilder url) {
-		if (attachmentFile == null) {
-			attachmentFile = file;
+		if (request == null) {
+			request = data;
+		}
+		if (request == null) {
+			request = formRequest;
+		}
+		if (request == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Training details are required");
 		}
 		TrainingDtoRequest requestWithFile = new TrainingDtoRequest(
 				request.title(), request.description(), request.provider(), request.attachment(),
