@@ -48,3 +48,12 @@ server:
   port: ${SERVER_PORT}
   error:
     include-message: never       # errors go through GlobalExceptionHandler
+
+
+# Creadentials for the test user. This user is created automatically when the application starts.
+
+pis:
+  security:
+    officer-password: ${OFFICER_PASSWORD}
+    approver-password: ${APPROVER_PASSWORD}
+    admin-password: ${ADMIN_PASSWORD}
